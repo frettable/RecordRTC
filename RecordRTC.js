@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2019-12-17 7:57:03 PM UTC
+// Last time updated: 2020-02-20 6:53:45 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -781,7 +781,7 @@ function RecordRTC(mediaStream, config) {
          * @example
          * alert(recorder.version);
          */
-        version: '@@version'
+        version: '5.5.9'
     };
 
     if (!this) {
@@ -799,7 +799,7 @@ function RecordRTC(mediaStream, config) {
     return returnObject;
 }
 
-RecordRTC.version = '@@version';
+RecordRTC.version = '5.5.9';
 
 if (typeof module !== 'undefined' /* && !!module.exports*/ ) {
     module.exports = RecordRTC;
@@ -2671,12 +2671,27 @@ function StereoAudioRecorder(mediaStream, config) {
                 return before + (after - before) * atPoint;
             }
 
+            function getMaxAmplitude(channelBuffer) {
+                var maxAmplitude = 0;
+                for (var i = 0; i < channelBuffer.length; i++) {
+                    for (var j = 0; j < channelBuffer[i].length; j++) {
+                        if (Math.abs(channelBuffer[i][j]) >= maxAmplitude) {
+                            maxAmplitude = Math.abs(channelBuffer[i][j]);
+                        }
+                    }
+                }
+                return maxAmplitude;
+            }
+
             function mergeBuffers(channelBuffer, rLength) {
                 var result = new Float64Array(rLength);
                 var offset = 0;
                 var lng = channelBuffer.length;
-
+                var maxAmplitude = getMaxAmplitude(channelBuffer);
                 for (var i = 0; i < lng; i++) {
+                    for (var j = 0; j < channelBuffer[i].length; j++) {
+                        channelBuffer[i][j] /= maxAmplitude;
+                    }
                     var buffer = channelBuffer[i];
                     result.set(buffer, offset);
                     offset += buffer.length;
@@ -3142,10 +3157,12 @@ function StereoAudioRecorder(mediaStream, config) {
         // we clone the samples
         var chLeft = new Float32Array(left);
         leftchannel.push(chLeft);
-        
+
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
             var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration;
-            if (browser.satisfies({'firefox': '>=25'}) === true) {
+            if (browser.satisfies({
+                    'firefox': '>=25'
+                }) === true) {
                 // firefox seems to populate e.playbackTime correctly, while other browsers hop forward too far
                 bufferStartTime += e.inputBuffer.duration;
             }
@@ -5930,7 +5947,7 @@ function RecordRTCPromisesHandler(mediaStream, options) {
      * @example
      * alert(recorder.version);
      */
-    this.version = '@@version';
+    this.version = '5.5.9';
 }
 
 if (typeof RecordRTC !== 'undefined') {
