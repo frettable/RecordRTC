@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-03-16 11:27:03 PM UTC
+// Last time updated: 2020-03-25 11:42:24 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -3159,7 +3159,7 @@ function StereoAudioRecorder(mediaStream, config) {
         leftchannel.push(chLeft);
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = e.playbackTime - 3 * e.inputBuffer.duration;
+            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration;
             if (browser.satisfies({
                     'firefox': '>=25'
                 }) === true) {
