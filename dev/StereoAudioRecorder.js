@@ -414,30 +414,40 @@ function StereoAudioRecorder(mediaStream, config) {
         });
     };
 
-    if (typeof window.Storage !== 'object') {
-        window.Storage = {
+    if (typeof RecordRTC.Storage === 'undefined') {
+        RecordRTC.Storage = {
             AudioContextConstructor: null,
-            AudioContext: window.AudioContext || window.webkitAudioContext
+            AudioContext: window.top.AudioContext || window.top.webkitAudioContext
         };
     }
 
-    if (!window.Storage.AudioContextConstructor) {
+    if (!RecordRTC.Storage.AudioContextConstructor || RecordRTC.Storage.AudioContextConstructor.state === 'closed') {
+
         // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/AudioContext
         const sampleRateSupported = browser.satisfies({
             chrome: '>= 74'
         });
         if (sampleRateSupported === true) {
-            window.Storage.AudioContextConstructor = new window.Storage.AudioContext({
+            RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext({
                 sampleRate: config.sampleRate
             });
         } else {
-            window.Storage.AudioContextConstructor = new window.Storage.AudioContext();
+            RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext();
         }
     }
 
-    var context = window.Storage.AudioContextConstructor;
+    var context = RecordRTC.Storage.AudioContextConstructor;
 
     // creates an audio node from the microphone incoming stream
+    if (!context) {
+        RecordRTC.Storage = {
+            AudioContextConstructor: null,
+            AudioContext: window.top.AudioContext || window.top.webkitAudioContext
+        };
+        RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext()
+        context = RecordRTC.Storage.AudioContextConstructor;
+    }
+    mediaStream = mediaStream.clone();
     var audioInput = context.createMediaStreamSource(mediaStream);
 
     var legalBufferValues = [0, 256, 512, 1024, 2048, 4096, 8192, 16384];
