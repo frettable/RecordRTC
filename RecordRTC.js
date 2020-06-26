@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-04-28 8:14:12 PM UTC
+// Last time updated: 2020-05-05 10:11:10 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -2527,7 +2527,7 @@ function StereoAudioRecorder(mediaStream, config) {
     config = config || {};
 
     var self = this;
-    var browser = bowser.getParser(window.navigator.userAgent);
+    var uadata = new UAParser(window.navigator.userAgent).getResult();
 
     // variables
     var leftchannel = [];
@@ -2914,36 +2914,36 @@ function StereoAudioRecorder(mediaStream, config) {
 
     if (typeof RecordRTC.Storage === 'undefined') {
         RecordRTC.Storage = {
-            AudioContextConstructor: null,
+            AudioContextvarructor: null,
             AudioContext: window.top.AudioContext || window.top.webkitAudioContext
         };
     }
 
-    if (!RecordRTC.Storage.AudioContextConstructor || RecordRTC.Storage.AudioContextConstructor.state === 'closed') {
-
+    if (!RecordRTC.Storage.AudioContextvarructor || RecordRTC.Storage.AudioContextvarructor.state === 'closed') {
         // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/AudioContext
-        const sampleRateSupported = browser.satisfies({
-            chrome: '>= 74'
-        });
+        var isSafariSupported = uadata.browser.name.includes('Safari');
+        var isEdgeSupported = uadata.browser.name === 'Edge' && parseInt(uadata.browser.major) >= 79;
+        var isChromeSupported = uadata.browser.name.includes('Chrom') && parseInt(uadata.browser.major) >= 74;
+        var sampleRateSupported = isChromeSupported || isSafariSupported || isEdgeSupported;
         if (sampleRateSupported === true) {
-            RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext({
+            RecordRTC.Storage.AudioContextvarructor = new RecordRTC.Storage.AudioContext({
                 sampleRate: config.sampleRate
             });
         } else {
-            RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext();
+            RecordRTC.Storage.AudioContextvarructor = new RecordRTC.Storage.AudioContext();
         }
     }
 
-    var context = RecordRTC.Storage.AudioContextConstructor;
+    var context = RecordRTC.Storage.AudioContextvarructor;
 
     // creates an audio node from the microphone incoming stream
     if (!context) {
         RecordRTC.Storage = {
-            AudioContextConstructor: null,
+            AudioContextvarructor: null,
             AudioContext: window.top.AudioContext || window.top.webkitAudioContext
         };
-        RecordRTC.Storage.AudioContextConstructor = new RecordRTC.Storage.AudioContext()
-        context = RecordRTC.Storage.AudioContextConstructor;
+        RecordRTC.Storage.AudioContextvarructor = new RecordRTC.Storage.AudioContext();
+        context = RecordRTC.Storage.AudioContextvarructor;
     }
     mediaStream = mediaStream.clone();
     var audioInput = context.createMediaStreamSource(mediaStream);
@@ -3170,13 +3170,12 @@ function StereoAudioRecorder(mediaStream, config) {
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
             var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration;
-            if (browser.satisfies({
-                    'firefox': '>=25'
-                }) === true) {
+            var isFirefoxSupported = uadata.browser.name === 'Firefox' && parseInt(uadata.browser.major) >= 25;
+            if (isFirefoxSupported) {
                 // firefox seems to populate e.playbackTime correctly, while other browsers hop forward too far
                 bufferStartTime += e.inputBuffer.duration;
             }
-            const bufferEndTime = bufferStartTime + e.inputBuffer.duration;
+            var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
         }
 
@@ -3201,7 +3200,7 @@ function StereoAudioRecorder(mediaStream, config) {
     this.numberOfAudioChannels = numberOfAudioChannels;
     this.desiredSampRate = desiredSampRate;
     this.sampleRate = sampleRate;
-    this.context = Storage.AudioContextConstructor;
+    this.context = Storage.AudioContextvarructor;
     this.bufferSize = bufferSize;
     self.recordingLength = recordingLength;
 
