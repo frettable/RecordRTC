@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-07-01 6:29:30 AM UTC
+// Last time updated: 2020-07-01 7:03:50 AM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -2578,9 +2578,7 @@ function StereoAudioRecorder(mediaStream, config) {
             // always return "true"
             return true;
         }
-        if (!mediaStream) {
-            return true;
-        }
+
         if ('active' in mediaStream) {
             if (!mediaStream.active) {
                 return false;
@@ -2985,6 +2983,13 @@ function StereoAudioRecorder(mediaStream, config) {
         throw 'WebAudio API has no support on this browser.';
     }
 
+    // to prevent self audio to be connected with speakers
+    if (context.createMediaStreamDestination) {
+        jsAudioNode.connect(context.createMediaStreamDestination());
+    } else {
+        jsAudioNode.connect(context.destination);
+    }
+
     // connect the stream to the script processor
     if (mediaStream) {
         mediaStream = mediaStream.clone();
@@ -3187,16 +3192,7 @@ function StereoAudioRecorder(mediaStream, config) {
         // export raw PCM
         self.recordingLength = recordingLength;
     }
-
-    jsAudioNode.onaudioprocess = onAudioProcessDataAvailable;
-
-    // to prevent self audio to be connected with speakers
-    if (context.createMediaStreamDestination) {
-        jsAudioNode.connect(context.createMediaStreamDestination());
-    } else {
-        jsAudioNode.connect(context.destination);
-    }
-
+    this.onAudioProcessDataAvailable = onAudioProcessDataAvailable;
     // export raw PCM
     this.leftchannel = leftchannel;
     this.rightchannel = rightchannel;
