@@ -83,9 +83,9 @@ function StereoAudioRecorder(mediaStream, config) {
             // always return "true"
             return true;
         }
-		if (!mediaStream){
-			return true;
-		}
+        if (!mediaStream) {
+            return true;
+        }
         if ('active' in mediaStream) {
             if (!mediaStream.active) {
                 return false;
@@ -710,7 +710,7 @@ function StereoAudioRecorder(mediaStream, config) {
     this.sampleRate = sampleRate;
     this.context = Storage.AudioContextvarructor;
     this.bufferSize = bufferSize;
-    this.jsAudioNode = jsAudioNode
+    this.jsAudioNode = jsAudioNode;
     self.recordingLength = recordingLength;
 
     // helper for intervals based blobs
