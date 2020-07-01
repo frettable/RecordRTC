@@ -5,6 +5,7 @@ node_modules
 bower_components
 
 .DS_Store
+.idea/
 
 !RecordRTC-to-Nodejs/node_modules
 

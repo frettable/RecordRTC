@@ -21,9 +21,6 @@
  */
 
 function RecordRTC(mediaStream, config) {
-    if (!mediaStream) {
-        throw 'First parameter is required.';
-    }
 
     config = config || {
         type: 'video'

@@ -37,6 +37,7 @@ function StereoAudioRecorder(mediaStream, config) {
     var recording = false;
     var recordingLength = 0;
     var jsAudioNode;
+    var audioInput;
 
     var numberOfAudioChannels = 2;
 
@@ -82,7 +83,9 @@ function StereoAudioRecorder(mediaStream, config) {
             // always return "true"
             return true;
         }
-
+		if (!mediaStream){
+			return true;
+		}
         if ('active' in mediaStream) {
             if (!mediaStream.active) {
                 return false;
@@ -447,8 +450,6 @@ function StereoAudioRecorder(mediaStream, config) {
         RecordRTC.Storage.AudioContextvarructor = new RecordRTC.Storage.AudioContext();
         context = RecordRTC.Storage.AudioContextvarructor;
     }
-    mediaStream = mediaStream.clone();
-    var audioInput = context.createMediaStreamSource(mediaStream);
 
     var legalBufferValues = [0, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
@@ -490,7 +491,11 @@ function StereoAudioRecorder(mediaStream, config) {
     }
 
     // connect the stream to the script processor
-    audioInput.connect(jsAudioNode);
+    if (mediaStream) {
+        mediaStream = mediaStream.clone();
+        var audioInput = context.createMediaStreamSource(mediaStream);
+        audioInput.connect(jsAudioNode);
+    }
 
     if (!config.bufferSize) {
         bufferSize = jsAudioNode.bufferSize; // device buffer-size
@@ -588,6 +593,7 @@ function StereoAudioRecorder(mediaStream, config) {
         recording = false;
         isPaused = false;
         context = null;
+        jsAudioNode = null;
 
         self.leftchannel = leftchannel;
         self.rightchannel = rightchannel;
@@ -704,6 +710,7 @@ function StereoAudioRecorder(mediaStream, config) {
     this.sampleRate = sampleRate;
     this.context = Storage.AudioContextvarructor;
     this.bufferSize = bufferSize;
+    this.jsAudioNode = jsAudioNode
     self.recordingLength = recordingLength;
 
     // helper for intervals based blobs

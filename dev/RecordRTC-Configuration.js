@@ -31,7 +31,7 @@ function RecordRTCConfiguration(mediaStream, config) {
             config.type = 'gif';
         } else if (config.recorderType === StereoAudioRecorder) {
             config.type = 'audio';
-        } else if (config.recorderType === MediaStreamRecorder) {
+        } else if (config.recorderType === MediaStreamRecorder && mediaStream) {
             if (getTracks(mediaStream, 'audio').length && getTracks(mediaStream, 'video').length) {
                 config.type = 'video';
             } else if (!getTracks(mediaStream, 'audio').length && getTracks(mediaStream, 'video').length) {
