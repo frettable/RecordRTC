@@ -671,7 +671,7 @@ function StereoAudioRecorder(mediaStream, config) {
         leftchannel.push(chLeft);
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration;
+            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration - e.target.context.baseLatency || 0.0;
             var isFirefoxSupported = uadata.browser.name === 'Firefox' && parseInt(uadata.browser.major) >= 25;
             if (isFirefoxSupported) {
                 // firefox seems to populate e.playbackTime correctly, while other browsers hop forward too far
