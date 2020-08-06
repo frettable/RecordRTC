@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-05-05 10:11:10 PM UTC
+// Last time updated: 2020-08-06 8:57:10 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -3169,7 +3169,7 @@ function StereoAudioRecorder(mediaStream, config) {
         leftchannel.push(chLeft);
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration;
+            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration - parseFloat(e.target.context.baseLatency || 0.0);
             var isFirefoxSupported = uadata.browser.name === 'Firefox' && parseInt(uadata.browser.major) >= 25;
             if (isFirefoxSupported) {
                 // firefox seems to populate e.playbackTime correctly, while other browsers hop forward too far
