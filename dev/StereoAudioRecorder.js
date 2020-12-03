@@ -563,15 +563,15 @@ function StereoAudioRecorder(mediaStream, config) {
             this.record();
             return;
         }
-            
+
         isPaused = false;
-        if (pauseElapsedTime != null) {
+        if (pauseElapsedTime !== null) {
             if (timePausedIn) {
                 timePaused = timePausedIn;
             } else {
-                timePaussed += (Date.now() - pauseElapsedTime);
+                timePaused += (Date.now() - pauseElapsedTime);
             }
-            pauseElapsedTime = null;   
+            pauseElapsedTime = null;
         }
     };
 
@@ -640,6 +640,7 @@ function StereoAudioRecorder(mediaStream, config) {
 
     var isAudioProcessStarted = false;
     var start;
+
     function onAudioProcessDataAvailable(e) {
         if (isPaused) {
             return;
@@ -683,13 +684,13 @@ function StereoAudioRecorder(mediaStream, config) {
         // we clone the samples
         var chLeft = new Float32Array(left);
         leftchannel.push(chLeft);
-        
+
         if (start === undefined) {
             start = e.timeStamp;
         }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = (e.timeStamp - start - timePaused)/1000;
+            var bufferStartTime = (e.timeStamp - start - timePaused) / 1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
         }
