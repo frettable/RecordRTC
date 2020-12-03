@@ -39,6 +39,9 @@ function StereoAudioRecorder(mediaStream, config) {
     var jsAudioNode;
 
     var numberOfAudioChannels = 2;
+    //keep track of time paused
+    var pauseElapsedTime = null;
+    var timePaused = 0;
 
     /**
      * Set sample rates such as 8K or 16K. Reference: http://stackoverflow.com/a/28977136/552182
@@ -537,6 +540,7 @@ function StereoAudioRecorder(mediaStream, config) {
      * recorder.pause();
      */
     this.pause = function() {
+        pauseElapsedTime = Date.now();
         isPaused = true;
     };
 
@@ -547,7 +551,7 @@ function StereoAudioRecorder(mediaStream, config) {
      * @example
      * recorder.resume();
      */
-    this.resume = function() {
+    this.resume = function(timePausedIn) {
         if (isMediaStreamActive() === false) {
             throw 'Please make sure MediaStream is active.';
         }
@@ -559,8 +563,16 @@ function StereoAudioRecorder(mediaStream, config) {
             this.record();
             return;
         }
-
+            
         isPaused = false;
+        if (pauseElapsedTime != null) {
+            if (timePausedIn) {
+                timePaused = timePausedIn;
+            } else {
+                timePaussed += (Date.now() - pauseElapsedTime);
+            }
+            pauseElapsedTime = null;   
+        }
     };
 
     /**
@@ -588,6 +600,8 @@ function StereoAudioRecorder(mediaStream, config) {
         recording = false;
         isPaused = false;
         context = null;
+        timePaused = 0;
+        pauseElapsedTime = null;
 
         self.leftchannel = leftchannel;
         self.rightchannel = rightchannel;
@@ -625,7 +639,7 @@ function StereoAudioRecorder(mediaStream, config) {
     };
 
     var isAudioProcessStarted = false;
-
+    var start;
     function onAudioProcessDataAvailable(e) {
         if (isPaused) {
             return;
@@ -669,14 +683,13 @@ function StereoAudioRecorder(mediaStream, config) {
         // we clone the samples
         var chLeft = new Float32Array(left);
         leftchannel.push(chLeft);
+        
+        if (start === undefined) {
+            start = e.timeStamp;
+        }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = e.playbackTime - 2 * e.inputBuffer.duration - parseFloat(e.target.context.baseLatency || 0.0);
-            var isFirefoxSupported = uadata.browser.name === 'Firefox' && parseInt(uadata.browser.major) >= 25;
-            if (isFirefoxSupported) {
-                // firefox seems to populate e.playbackTime correctly, while other browsers hop forward too far
-                bufferStartTime += e.inputBuffer.duration;
-            }
+            var bufferStartTime = (e.timeStamp - start - timePaused)/1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
         }
