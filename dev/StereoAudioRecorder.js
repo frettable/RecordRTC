@@ -40,7 +40,6 @@ function StereoAudioRecorder(mediaStream, config) {
 
     var numberOfAudioChannels = 2;
     //keep track of time paused
-    var pauseElapsedTime = null;
     var timePaused = 0;
 
     /**
@@ -540,7 +539,6 @@ function StereoAudioRecorder(mediaStream, config) {
      * recorder.pause();
      */
     this.pause = function() {
-        pauseElapsedTime = Date.now();
         isPaused = true;
     };
 
@@ -565,13 +563,8 @@ function StereoAudioRecorder(mediaStream, config) {
         }
 
         isPaused = false;
-        if (pauseElapsedTime !== null) {
-            if (timePausedIn) {
-                timePaused = timePausedIn;
-            } else {
-                timePaused += (Date.now() - pauseElapsedTime);
-            }
-            pauseElapsedTime = null;
+        if (timePausedIn !== null) {
+            timePaused = timePausedIn;
         }
     };
 
@@ -601,7 +594,6 @@ function StereoAudioRecorder(mediaStream, config) {
         isPaused = false;
         context = null;
         timePaused = 0;
-        pauseElapsedTime = null;
 
         self.leftchannel = leftchannel;
         self.rightchannel = rightchannel;
