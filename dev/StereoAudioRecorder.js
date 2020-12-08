@@ -565,7 +565,7 @@ function StereoAudioRecorder(mediaStream, config) {
 
         isPaused = false;
         if (timePausedIn !== null) {
-            timePaused = timePausedIn;
+            self.timePaused = timePausedIn;
         }
     };
 

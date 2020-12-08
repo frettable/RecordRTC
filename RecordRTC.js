@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-12-08 10:03:59 PM UTC
+// Last time updated: 2020-12-08 10:43:54 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -3063,7 +3063,7 @@ function StereoAudioRecorder(mediaStream, config) {
 
         isPaused = false;
         if (timePausedIn !== null) {
-            timePaused = timePausedIn;
+            self.timePaused = timePausedIn;
         }
     };
 
