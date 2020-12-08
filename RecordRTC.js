@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-12-03 10:42:39 PM UTC
+// Last time updated: 2020-12-08 10:03:59 PM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -2539,6 +2539,7 @@ function StereoAudioRecorder(mediaStream, config) {
     var numberOfAudioChannels = 2;
     //keep track of time paused
     var timePaused = 0;
+    var startTime;
 
     /**
      * Set sample rates such as 8K or 16K. Reference: http://stackoverflow.com/a/28977136/552182
@@ -3092,6 +3093,7 @@ function StereoAudioRecorder(mediaStream, config) {
         isPaused = false;
         context = null;
         timePaused = 0;
+        startTime = undefined;
 
         self.leftchannel = leftchannel;
         self.rightchannel = rightchannel;
@@ -3099,6 +3101,8 @@ function StereoAudioRecorder(mediaStream, config) {
         self.desiredSampRate = desiredSampRate;
         self.sampleRate = sampleRate;
         self.recordingLength = recordingLength;
+        self.timePaused = timePaused;
+        self.startTime = startTime;
 
         intervalsBasedBuffers = {
             left: [],
@@ -3129,7 +3133,6 @@ function StereoAudioRecorder(mediaStream, config) {
     };
 
     var isAudioProcessStarted = false;
-    var start;
 
     function onAudioProcessDataAvailable(e) {
         if (isPaused) {
@@ -3175,12 +3178,12 @@ function StereoAudioRecorder(mediaStream, config) {
         var chLeft = new Float32Array(left);
         leftchannel.push(chLeft);
 
-        if (start === undefined) {
-            start = e.timeStamp;
+        if (self.startTime === undefined) {
+            self.startTime = e.timeStamp;
         }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            var bufferStartTime = (e.timeStamp - start - timePaused) / 1000;
+            var bufferStartTime = (e.timeStamp - self.startTime - self.timePaused) / 1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
         }
