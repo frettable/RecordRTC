@@ -1,6 +1,6 @@
 'use strict';
 
-// Last time updated: 2020-12-08 10:43:54 PM UTC
+// Last time updated: 2020-12-30 7:07:54 AM UTC
 
 // ________________
 // RecordRTC v5.5.9
@@ -3183,6 +3183,7 @@ function StereoAudioRecorder(mediaStream, config) {
         }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
+            self.timeStamp = e.timeStamp;
             var bufferStartTime = (e.timeStamp - self.startTime - self.timePaused) / 1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);

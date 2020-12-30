@@ -685,6 +685,7 @@ function StereoAudioRecorder(mediaStream, config) {
         }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
+            self.timeStamp = e.timeStamp;
             var bufferStartTime = (e.timeStamp - self.startTime - self.timePaused) / 1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
