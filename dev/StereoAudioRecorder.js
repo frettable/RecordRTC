@@ -41,6 +41,7 @@ function StereoAudioRecorder(mediaStream, config) {
     var numberOfAudioChannels = 2;
     //keep track of time paused
     var timePaused = 0;
+    var seekTime = 0;
     var startTime;
 
     /**
@@ -550,7 +551,7 @@ function StereoAudioRecorder(mediaStream, config) {
      * @example
      * recorder.resume();
      */
-    this.resume = function(timePausedIn) {
+    this.resume = function() {
         if (isMediaStreamActive() === false) {
             throw 'Please make sure MediaStream is active.';
         }
@@ -564,9 +565,6 @@ function StereoAudioRecorder(mediaStream, config) {
         }
 
         isPaused = false;
-        if (timePausedIn !== null) {
-            self.timePaused = timePausedIn;
-        }
     };
 
     /**
@@ -595,6 +593,7 @@ function StereoAudioRecorder(mediaStream, config) {
         isPaused = false;
         context = null;
         timePaused = 0;
+        seekTime = 0;
         startTime = undefined;
 
         self.leftchannel = leftchannel;
@@ -604,6 +603,7 @@ function StereoAudioRecorder(mediaStream, config) {
         self.sampleRate = sampleRate;
         self.recordingLength = recordingLength;
         self.timePaused = timePaused;
+        self.seekTime = seekTime;
         self.startTime = startTime;
 
         intervalsBasedBuffers = {
@@ -685,8 +685,7 @@ function StereoAudioRecorder(mediaStream, config) {
         }
 
         if ('onaudioprocess' in config && typeof config.onaudioprocess === 'function') {
-            self.timeStamp = e.timeStamp;
-            var bufferStartTime = (e.timeStamp - self.startTime - self.timePaused) / 1000;
+            var bufferStartTime = (e.timeStamp - self.startTime - self.timePaused - self.seekTime) / 1000;
             var bufferEndTime = bufferStartTime + e.inputBuffer.duration;
             config.onaudioprocess(left, bufferStartTime, bufferEndTime);
         }

@@ -204,7 +204,7 @@ function RecordRTC(mediaStream, config) {
         }
     }
 
-    function resumeRecording(timePaused) {
+    function resumeRecording() {
         if (!mediaRecorder) {
             warningLog();
             return;
@@ -220,7 +220,7 @@ function RecordRTC(mediaStream, config) {
         setState('recording');
 
         // not all libs have this method yet
-        mediaRecorder.resume(timePaused);
+        mediaRecorder.resume();
 
         if (!config.disableLogs) {
             console.log('Resumed recording.');
